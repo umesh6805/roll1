@@ -25,17 +25,6 @@ jobs:
           cp deploy/app.py backup/app.py
           echo "Backup Created"
 
-      - name: Show Backup
-        run: |
-          echo "Backup File:"
-          cat backup/app.py
-
-      - name: Upload Backup
-        uses: actions/upload-artifact@v4
-        with:
-          name: backup-files
-          path: backup/
-
       - name: Deploy New Version
         run: |
           cp app.py deploy/app.py
@@ -43,7 +32,6 @@ jobs:
 
       - name: Show Deployed Version
         run: |
-          echo "Deployed File:"
           cat deploy/app.py
 
       - name: Simulate Deployment Failure
