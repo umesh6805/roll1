@@ -1,4 +1,4 @@
-name: Flask Rollback Demo
+name: Flask CI/CD Rollback Demo
 
 on:
   push:
@@ -7,12 +7,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  demo:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Test
-        run: echo "Workflow started successfully"
+      - name: Show Initial Version
+        run: |
+          echo "Current deployed application:"
+          cat deploy/app.py
+
+      - name: Create Backup
+        run: |
+          mkdir -p backup
+          cp deploy/app.py backup/app.py
+          echo "Backup Created"
+
+      - name: Deploy New Version
+        run: |
+          cp app.py deploy/app.py
+          echo "New Version Deployed"
+
+      - name: Show Deployed Version
+        run: |
+          cat deploy/app.py
+
+      - name: Simulate Deployment Failure
+        run: |
+          echo "Deployment Failed!"
+          exit 1
+
+      - name: Rollback
+        if: failure()
+        run: |
+          cp backup/app.py deploy/app.py
+          echo "Rollback Completed"
+
+      - name: Verify Rollback
+        if: always()
+        run: |
+          echo "Current deployed application:"
+          cat deploy/app.py
